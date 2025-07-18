@@ -48,7 +48,7 @@ const client = async ({
   //   let fullUrl = isServer
   //     ? `${FULL_SERVER_URL}${url}`
   //     : `${FULL_BASE_URL}${url}`;
-  let fullUrl = FULL_SERVER_URL;
+  let fullUrl = `${FULL_SERVER_URL}${url}`
   let token = cookieToken;
 
   const { params, ...restData } = data;
@@ -91,7 +91,7 @@ const client = async ({
         ?.includes("application/json");
       const responseType = isJSON ? await res.json() : await res.text();
 
-      if (!res.ok) {
+      if (res.ok) {
         return { status: res?.status, data: responseType };
       } else {
         const { data, error } = responseType || {};

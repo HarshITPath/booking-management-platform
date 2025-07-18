@@ -1,3 +1,4 @@
+import moment from 'moment';
 export interface LogError {
   (error: unknown): void;
 }
@@ -34,11 +35,16 @@ export const apiAsyncHandler = async (
 };
 
 export const getTokenSync = (): string | undefined => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     // client
-    const match = document.cookie.match(new RegExp('(^| )token=([^;]+)'));
+    const match = document.cookie.match(new RegExp("(^| )token=([^;]+)"));
     return match?.[2];
   }
   // For server-side, return undefined if cookies() is not available
-  return '';
+  return "";
+};
+
+export const formatTimeFromISO = (isoString: string): string => {
+  if (!isoString) return '';
+  return moment(isoString).local().format('H:mm'); // or 'HH:mm' for 24-hour padded
 };

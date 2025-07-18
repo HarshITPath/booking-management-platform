@@ -4,7 +4,6 @@ import useAsyncOperation from "../use-async-operation";
 import { booingFormSchema } from "@/utils/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "@/api";
-import useFetchWithAbort from "../use-fetch-with-abort";
 import { Moment } from "moment";
 
 const useBookingForm = ({}) => {
@@ -88,52 +87,6 @@ const useBookingForm = ({}) => {
     ];
   }, []);
 
-  // const [slots, setSlots] = useState<any[]>([]);
-  // const [slotsLoading, setSlotsLoading] = useState(false);
-  // const [slotsError, setSlotsError] = useState<null | string>(null);
-
-  // async function getBookingInfo({
-  //   date,
-  //   meetingDuration,
-  //   signal,
-  // }: {
-  //   date: string;
-  //   meetingDuration: number;
-  //   signal?: AbortSignal;
-  // }) {
-  //   const response = await api.bookings.getAvailableSlots({
-  //     data: { params: { date, meetingDuration } },
-  //     signal,
-  //   });
-  //   return response || [];
-  // }
-
-  // const [fetchSlots] = useFetchWithAbort(
-  //   async ({ date, meetingDuration, signal }) => {
-  //     setSlotsLoading(true);
-  //     setSlotsError(null);
-  //     try {
-  //       const data = await getBookingInfo({ date, meetingDuration, signal });
-  //       setSlots(Array.isArray(data) ? data : []);
-  //     } catch (err: any) {
-  //       setSlotsError(err?.message || "Failed to fetch slots");
-  //       setSlots([]);
-  //     }
-  //     setSlotsLoading(false);
-  //   }
-  // );
-
-  // useEffect(() => {
-  //   if (selectedDate) {
-  //     fetchSlots({
-  //       date: selectedDate.format("YYYY-MM-DD"),
-  //       meetingDuration: 30,
-  //     });
-  //   } else {
-  //     setSlots([]);
-  //   }
-  // }, [selectedDate]);
-
   const [fetchAvailableSlot, slotLoading] = useAsyncOperation(
     async ({
       date,
@@ -145,6 +98,7 @@ const useBookingForm = ({}) => {
       const res = await api.bookings.getAvailableSlots({
         data: { params: { date, meetingDuration } },
       });
+      console.log('res in hook', res)
       return res;
     }
   );
