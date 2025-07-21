@@ -7,18 +7,29 @@ import TimeSlotSelector from "./time-slot";
 import BookingForm from "./booking-form";
 import DateCalendarViews from "./calendar";
 import useBookingForm from "@/hooks/booking-form/useBookingForm";
-
+ 
 export default function Home() {
   const {
+    bookingFormFields,
+    methods,
+    onSubmit,
+    loading,
     selectedDate,
-    selectedTime,
-    setSelectedTime,
     showForm,
     setShowForm,
     handleDateSelect,
     handleBackClick,
+    timezonData,
+    selectedTimezone,
+    setSelectedTimezone,
+    availableSlots,
+    selectedSlot,
+    handleSlotSelect,
+    timeFormat,
+    handleTimeFormatToggle,
+    slotLoading,
   } = useBookingForm({});
-
+ 
   return (
     <Stack
       sx={{
@@ -45,7 +56,14 @@ export default function Home() {
                   >
                     Back
                   </Button>
-                  <BookingForm date={selectedDate} time={selectedTime} />
+                  <BookingForm
+                    bookingFormFields={bookingFormFields}
+                    methods={methods}
+                    onSubmit={onSubmit}
+                    loading={loading}
+                    selectedDate={selectedDate}
+                    selectedSlot={selectedSlot}
+                  />
                 </Stack>
               ) : (
                 <Grid container spacing={{ xs: 2 }}>
@@ -59,10 +77,16 @@ export default function Home() {
                     <TimeSlotSelector
                       selectedDate={selectedDate}
                       show={!!selectedDate}
-                      onNext={(time) => {
-                        setSelectedTime(time);
-                        setShowForm(true);
-                      }}
+                      availableSlots={availableSlots}
+                      selectedSlot={selectedSlot}
+                      onSlotSelect={handleSlotSelect}
+                      onNext={() => setShowForm(true)}
+                      timezoneOptions={timezonData}
+                      selectedTimezone={selectedTimezone}
+                      setSelectedTimezone={setSelectedTimezone}
+                      timeFormat={timeFormat}
+                      onTimeFormatToggle={handleTimeFormatToggle}
+                      slotLoading={slotLoading}
                     />
                   </Grid>
                 </Grid>

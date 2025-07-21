@@ -9,5 +9,21 @@ export const api = {
         data,
         ...configs,
       }),
+    booking: ({ ...configs }: { [key: string]: any } = {}) =>
+      client({
+        // isServer: true,
+        url: '/booking',
+        method: METHODS.POST,
+        ...configs,
+      }),
   },
+  timeZones:{
+    getAvailableTimeZones: ({ data, ...configs }: { [key: string]: any }) =>
+      client({
+        url: "/common/timezones",
+        method: METHODS.GET,
+        data,
+        ...configs,
+      }),
+  }
 };

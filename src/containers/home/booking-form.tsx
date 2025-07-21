@@ -1,19 +1,19 @@
 "use client";
 import React from "react";
 import { Box, Button, Grid, Stack } from "@mui/material";
-import { Moment } from "moment";
-import useBookingForm from "@/hooks/booking-form/useBookingForm";
 import { Form } from "@/components/form";
 import Input from "@/components/inputs";
-
+ 
 interface BookingFormProps {
-  date: Moment | null;
-  time: string | null;
+  bookingFormFields: any[];
+  methods: any;
+  onSubmit: any;
+  loading: boolean;
+  selectedDate: any;
+  selectedSlot: any;
 }
-
-const BookingForm: React.FC<BookingFormProps> = () => {
-  const { bookingFormFields, methods, onSubmit, loading } = useBookingForm({});
-
+ 
+const BookingForm: React.FC<BookingFormProps> = ({ bookingFormFields, methods, onSubmit, loading }) => {
   return (
     <Box
       sx={{
@@ -25,27 +25,27 @@ const BookingForm: React.FC<BookingFormProps> = () => {
     >
       <Form {...{ methods, onSubmit }}>
         <Stack sx={{gap:2}}>
-        <Grid container spacing={{ xs: 2 }}>
-          {bookingFormFields?.map(({ id, gridProps, ...rest }) => {
-            return (
-              <Grid key={id} {...gridProps}>
-                <Input {...rest} />
-              </Grid>
-            );
-          })}
-        </Grid>
-        <Button
-          type="submit"
-          variant="outlined"
-          sx={{ alignSelf: "start" }}
-          {...{ loading }}
-        >
-          Submit
-        </Button>
+          <Grid container spacing={{ xs: 2 }}>
+            {bookingFormFields?.map(({ id, gridProps, ...rest }) => {
+              return (
+                <Grid key={id} {...gridProps}>
+                  <Input {...rest} />
+                </Grid>
+              );
+            })}
+          </Grid>
+          <Button
+            type="submit"
+            variant="outlined"
+            sx={{ alignSelf: "start" }}
+            {...{ loading }}
+          >
+            Submit
+          </Button>
         </Stack>
       </Form>
     </Box>
   );
 };
-
+ 
 export default BookingForm;
