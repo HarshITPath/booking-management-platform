@@ -36,7 +36,39 @@ type BookingFormValues = {
   message: string;
 };
 
-const useBookingForm = ({}) => {
+interface BookingConfirmationData {
+  id: number;
+  startTime: string;
+  endTime: string;
+  userName: string;
+  userEmail: string;
+  userTimezone: string;
+  additionalNotes: string;
+  agent: {
+    id: number;
+    name: string;
+    email: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: null;
+  };
+}
+
+interface BookingResponse {
+  data: {
+    status: number;
+    message: string;
+    data: BookingConfirmationData;
+  };
+}
+
+const useBookingForm = ({
+  agentCode,
+  slot,
+}: {
+  agentCode?: string;
+  slot?: string;
+}) => {
   const initialValues = {
     first_name: "",
     last_name: "",
@@ -66,36 +98,76 @@ const useBookingForm = ({}) => {
     display: string;
   } | null>(null);
 
-  const [selectedDate, setSelectedDate] = useState<Moment | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Moment | null>(moment());
   const [showForm, setShowForm] = useState(false);
   const [selectedTimezone, setSelectedTimezone] = useState<{
     id: string;
     label: string;
   } | null>(null);
   const lastFetchedDateRef = useRef<string | null>(null);
+  const [bookingConfirmation, setBookingConfirmation] =
+    useState<BookingConfirmationData | null>(null);
+  const [isBookingLinkInvalid, setIsBookingLinkInvalid] = useState(false);
+  const [blackoutDates, setBlackoutDates] = useState<string[]>([]);
+  const [disabledDays, setDisabledDays] = useState<number[]>([]);
+  const [eventDetails, setEventDetails] = useState<any | null>(null);
 
   const [fetchAvailableSlot, slotLoading] = useAsyncOperation<
     AvailableSlotsParams,
     AvailableSlotsResponse
   >(async (params: AvailableSlotsParams) => {
-    const res = (await api.bookings.getAvailableSlots({
-      data: { params },
-    })) as AvailableSlotsResponse;
-    const slots = res.data.data.availableSlots || [];
-    setSlotsUTC(slots);
-    setSelectedSlot(null); // Reset selected slot on new fetch
-    lastFetchedDateRef.current = params.date; // Track the date we just fetched
-    return res;
+    try {
+      const res = (await api.bookings.getAvailableSlots({
+        data: { params },
+        id: agentCode,
+      })) as any;
+
+      const slots = res.data.data.availableSlots || [];
+      const blackouts =
+        res.data.data.blackoutDates?.map((b: any) => b.date) || [];
+
+      const unavailableDays = (res.data.data.availability || [])
+        .filter((item: any) => !item.available)
+        .map((item: any) => {
+          const daysMap: Record<string, number> = {
+            Sunday: 0,
+            Monday: 1,
+            Tuesday: 2,
+            Wednesday: 3,
+            Thursday: 4,
+            Friday: 5,
+            Saturday: 6,
+          };
+          return daysMap[item.day];
+        });
+
+        const events = res.data.data.events;
+        setEventDetails(events?.[0] || null); 
+
+      setBlackoutDates(blackouts);
+      setDisabledDays(unavailableDays);
+      setSlotsUTC(slots);
+      setSelectedSlot(null);
+      lastFetchedDateRef.current = params.date;
+      setIsBookingLinkInvalid(false);
+      return res;
+    } catch (err) {
+      setIsBookingLinkInvalid(true);
+      setSlotsUTC([]);
+      setConvertedSlots([]);
+      return Promise.reject(err);
+    }
   });
+
+  const meetingDuration = slot ? parseInt(slot, 10) : 30;
 
   useEffect(() => {
     if (selectedDate) {
       const dateString = selectedDate.format("YYYY-MM-DD");
-      // Only fetch if we haven't fetched this date before
       if (lastFetchedDateRef.current !== dateString) {
         fetchAvailableSlot({
           date: dateString,
-          meetingDuration: 30,
+          meetingDuration,
         });
       }
     } else {
@@ -159,29 +231,20 @@ const useBookingForm = ({}) => {
   // On submit, include selected slot (local, utc), timezone, and format
   const [onSubmit, loading] = useAsyncOperation<BookingFormValues, any>(
     async (values) => {
-      console.log("values", values);
-      // const submission = {
-      //   ...(typeof values === "object" && values !== null ? values : {}),
-      //   date: selectedDate ? selectedDate.format("YYYY-MM-DD") : null,
-      //   time_local: selectedSlot?.local || null,
-      //   time_utc: selectedSlot?.utc || null,
-      //   time_display: selectedSlot?.display || null,
-      //   timezone: selectedTimezone?.id || null,
-      //   time_format: timeFormat,
-      // };
-      // console.log("Booking submission:", submission);
-      // Call your API or handle submission here
-
-      console.log('selectedDate in the form submit', selectedDate)
-
-      if (!selectedSlot || !selectedDate || !selectedTimezone) {
+      if (
+        !selectedSlot ||
+        !selectedDate ||
+        !selectedTimezone ||
+        !agentCode ||
+        isNaN(Number(agentCode))
+      ) {
         return;
       }
 
       const startTimeUTC = selectedSlot.utc; // already in ISO string
       const endTimeUTC = moment
         .utc(startTimeUTC)
-        .add(30, "minutes")
+        .add(slot, "minutes")
         .toISOString();
 
       const payload = {
@@ -191,18 +254,17 @@ const useBookingForm = ({}) => {
         userEmail: values.email_id,
         userTimezone: selectedTimezone.id,
         additionalNotes: values.message,
-        agent: {
-          id: 1, // If agent id is dynamic, replace with the correct value
-        },
+        agentId: agentCode ? Number(agentCode) : "",
       };
 
-      console.log("payload", payload);
-
-      const response = await api.bookings.booking({
+      const response = (await api.bookings.booking({
         data: payload,
-      });
+      })) as BookingResponse;
 
-      console.log("response", response);
+      if (response.data.status === 201) {
+        setBookingConfirmation(response.data.data);
+      }
+      return response;
     }
   );
 
@@ -215,10 +277,13 @@ const useBookingForm = ({}) => {
       const res = (await api.timeZones.getAvailableTimeZones(
         {}
       )) as TimeZonesResponse;
-      const tzList = res.data?.data?.timezones?.map((tz: string) => ({
-        id: tz,
-        label: tz,
-      }));
+      const tzList = res.data?.data?.timezones?.map((tz: string) => {
+        const currentTime = moment().tz(tz).format("HH:mm"); // or "h:mm A" for 12h
+        return {
+          id: tz,
+          label: `${tz} - ${currentTime}`,
+        };
+      });
       setTimezonData(tzList || []);
       return tzList;
     }
@@ -289,14 +354,11 @@ const useBookingForm = ({}) => {
     ];
   }, []);
 
-  console.log("selectedDate", selectedDate);
-
   return {
     bookingFormFields,
     methods,
     onSubmit,
     loading,
-    // Booking state
     selectedDate,
     setSelectedDate,
     selectedTimezone,
@@ -306,12 +368,18 @@ const useBookingForm = ({}) => {
     handleTimeFormatToggle,
     showForm,
     setShowForm,
-    slotLoading: false, // always false for static data
+    slotLoading,
     availableSlots: convertedSlots,
     selectedSlot,
     handleSlotSelect,
     handleDateSelect,
     handleBackClick,
+    bookingConfirmation,
+    setBookingConfirmation,
+    isBookingLinkInvalid,
+    blackoutDates,
+    disabledDays,
+    eventDetails
   };
 };
 

@@ -1,7 +1,6 @@
-// src/containers/home/booking-confirmation.tsx
 "use client";
 import React from "react";
-import { Box, Typography, Stack, Chip, Button } from "@mui/material";
+import { Box, Typography, Stack } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
 interface BookingConfirmationProps {
@@ -15,14 +14,10 @@ interface BookingConfirmationProps {
     date: string;
     time: string;
   };
-  onReschedule?: () => void;
-  onCancel?: () => void;
 }
 
 const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   details,
-  onReschedule,
-  onCancel,
 }) => {
   return (
     <Box
@@ -42,7 +37,8 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
           This meeting is scheduled
         </Typography>
         <Typography variant="body2" color="text.secondary" align="center">
-          We sent an email with a calendar invitation with the details to everyone.
+          We sent an email with a calendar invitation with the details to
+          everyone.
         </Typography>
         <Box width="100%" mt={2}>
           <Typography variant="subtitle2" color="text.secondary">
@@ -65,9 +61,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
             Who
           </Typography>
           <Typography variant="body1">
-            {details.first_name} {details.last_name}{" "}
-            <Chip label="Host" size="small" sx={{ ml: 1 }} />
-            <br />
+            {details.first_name} {details.last_name} <br />
             {details.email_id}
           </Typography>
         </Box>
@@ -79,14 +73,6 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
             Cal Video
           </Typography>
         </Box>
-        <Stack direction="row" spacing={2} mt={2}>
-          <Button variant="text" onClick={onReschedule}>
-            Reschedule
-          </Button>
-          <Button variant="text" color="error" onClick={onCancel}>
-            Cancel
-          </Button>
-        </Stack>
       </Stack>
     </Box>
   );

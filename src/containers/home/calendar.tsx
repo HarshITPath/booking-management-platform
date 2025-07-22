@@ -8,14 +8,24 @@ import { Moment } from "moment";
 interface DateCalendarViewsProps {
   onDateSelect: (date: Moment | null) => void;
   selectedDate: Moment | null;
+  blackoutDates?: string[]; // e.g. ['2025-07-18']
+  disabledDays?: number[];
 }
 
 export default function DateCalendarViews({
   onDateSelect,
   selectedDate,
+  blackoutDates = [],
+  disabledDays = [],
 }: DateCalendarViewsProps) {
   const handleDateChange = (newDate: Moment | null) => {
     onDateSelect(newDate);
+  };
+
+  const shouldDisableDate = (date: Moment) => {
+    const isBlackout = blackoutDates.includes(date.format("YYYY-MM-DD"));
+    const isDisabledDay = disabledDays.includes(date.day());
+    return isBlackout || isDisabledDay;
   };
 
   return (
@@ -23,6 +33,7 @@ export default function DateCalendarViews({
       <DateCalendar
         views={["day"]}
         disablePast
+        shouldDisableDate={shouldDisableDate}
         sx={{
           "&.MuiDateCalendar-root": {
             margin: 0,
