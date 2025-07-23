@@ -36,7 +36,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ bookingFormFields, methods, o
           </Grid>
           <Button
             type="submit"
-            variant="outlined"
+            variant="contained"
             sx={{ alignSelf: "start" }}
             {...{ loading }}
           >

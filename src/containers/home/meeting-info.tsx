@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Box, Typography, Stack } from "@mui/material";
-import { VideoCall } from "@mui/icons-material";
+import { ICONS } from "@/assets/icons";
 
 interface EventDetails {
   id: number;
@@ -9,13 +9,31 @@ interface EventDetails {
   message: string;
   duration: number;
   url?: string;
+  agent?: {
+    id: number;
+    name: string;
+  };
 }
 
 interface SidebarProps {
   event: EventDetails | null;
+  showForm?: boolean;
+  selectedSlot?: {
+    local: string;
+    utc: string;
+    display: string;
+  } | null;
+  selectedDate?: moment.Moment | null;
+  selectedTimezone?: { id: string; label: string } | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ event }) => {
+const MeetingInfo: React.FC<SidebarProps> = ({
+  event,
+  showForm,
+  selectedSlot,
+  selectedDate,
+  selectedTimezone,
+}) => {
   return (
     <Box
       sx={{
@@ -26,45 +44,46 @@ const Sidebar: React.FC<SidebarProps> = ({ event }) => {
         height: "100%",
       }}
     >
-      <Stack spacing={3}>
-        <Box>
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            sx={{
-              color: "#1a202c",
-              mb: 2,
-            }}
-          >
-            {event?.title}
+      <Stack spacing={2}>
+        <Typography variant="h6" fontWeight="bold">
+          {event?.title}
+        </Typography>
+        <Stack direction={"row"} sx={{ gap: 1, alignItems: "center" }}>
+          <ICONS.Person />
+          <Typography variant="body1" fontWeight="bold">
+            {event?.agent?.name}
           </Typography>
-
-          {event?.duration && (
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              {event.duration} min
-            </Typography>
-          )}
-
-          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
-            <VideoCall sx={{ fontSize: 16, color: "#666" }} />
-            <Typography variant="body2" color="text.secondary">
-              {event?.url
-                ? `Meeting link: ${event.url}`
-                : "Web conferencing details provided upon confirmation."}
-            </Typography>
+        </Stack>
+        {event?.duration && (
+          <Stack direction={"row"} sx={{ gap: 1, alignItems: "center" }}>
+            <ICONS.Time />
+            <Typography variant="body2">{event.duration} Minutes</Typography>
           </Stack>
-        </Box>
-
+        )}
+        {showForm && selectedSlot && selectedDate && selectedTimezone && (
+          <Stack spacing={2}>
+            <Stack direction={"row"} sx={{ gap: 1, alignItems: "center" }}>
+              <ICONS.Calendar />
+              <Typography variant="body2">
+                {selectedDate.format("MMMM D, YYYY")}
+              </Typography>
+            </Stack>
+            <Stack direction={"row"} sx={{ gap: 1, alignItems: "center" }}>
+              <ICONS.Alarms />
+              <Typography variant="body2">{selectedSlot.display}</Typography>
+            </Stack>
+            <Stack direction={"row"} sx={{ gap: 1, alignItems: "center" }}>
+              <ICONS.Timezone />
+              <Typography variant="body2">{selectedTimezone.id}</Typography>
+            </Stack>
+          </Stack>
+        )}
         {event?.message && (
-          <Box>
-            <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.6 }}>
-              {event.message}
-            </Typography>
-          </Box>
+          <Typography variant="body2">{event.message}</Typography>
         )}
       </Stack>
     </Box>
   );
 };
 
-export default Sidebar;
+export default MeetingInfo;

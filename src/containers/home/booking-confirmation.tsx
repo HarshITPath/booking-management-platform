@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { Box, Typography, Stack } from "@mui/material";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { Box, Typography, Stack, Divider } from "@mui/material";
+import { ICONS } from "@/assets/icons";
 
 interface BookingConfirmationProps {
   details: {
@@ -13,6 +13,7 @@ interface BookingConfirmationProps {
     organization?: string;
     date: string;
     time: string;
+    name:string
   };
 }
 
@@ -32,7 +33,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
       }}
     >
       <Stack spacing={3} alignItems="center">
-        <CheckCircleOutlineIcon sx={{ color: "#4caf50", fontSize: 48 }} />
+        <ICONS.Confirmation sx={{ color: "#4caf50", fontSize: 48 }} />
         <Typography variant="h5" fontWeight="bold" align="center">
           This meeting is scheduled
         </Typography>
@@ -40,39 +41,34 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
           We sent an email with a calendar invitation with the details to
           everyone.
         </Typography>
-        <Box width="100%" mt={2}>
-          <Typography variant="subtitle2" color="text.secondary">
-            What
-          </Typography>
-          <Typography variant="body1" fontWeight="bold">
-            30 Min Meeting between {details.first_name} {details.last_name}
-          </Typography>
-        </Box>
-        <Box width="100%">
-          <Typography variant="subtitle2" color="text.secondary">
-            When
-          </Typography>
-          <Typography variant="body1" fontWeight="bold">
-            {details.date}, {details.time}
-          </Typography>
-        </Box>
-        <Box width="100%">
-          <Typography variant="subtitle2" color="text.secondary">
-            Who
-          </Typography>
-          <Typography variant="body1">
-            {details.first_name} {details.last_name} <br />
-            {details.email_id}
-          </Typography>
-        </Box>
-        <Box width="100%">
-          <Typography variant="subtitle2" color="text.secondary">
-            Where
-          </Typography>
-          <Typography variant="body1" color="primary">
-            Cal Video
-          </Typography>
-        </Box>
+        <Stack spacing={2.5} width="100%">
+          <Stack>
+            <Typography variant="subtitle1" color="text.secondary">
+              What
+            </Typography>
+            <Typography variant="body1" fontWeight="bold">
+              30 Min Meeting with {details?.name}
+            </Typography>
+          </Stack>
+          <Stack>
+            <Typography variant="subtitle2" color="text.secondary">
+              When
+            </Typography>
+            <Typography variant="body1" fontWeight="bold">
+              {details.date}, {details?.time}
+            </Typography>
+          </Stack>
+          <Stack>
+            <Typography variant="subtitle2" color="text.secondary">
+              Who
+            </Typography>
+            <Typography variant="body1">
+              {details?.first_name} {details?.last_name} <br />
+              {details?.email_id}
+            </Typography>
+          </Stack>
+        </Stack>
+        {/* <Divider sx={{ height: "2px", width: "100%" }} /> */}
       </Stack>
     </Box>
   );

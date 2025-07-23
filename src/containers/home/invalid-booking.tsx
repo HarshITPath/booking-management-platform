@@ -1,6 +1,13 @@
 import React from "react";
-import { Box, Typography, Paper, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-import CircleIcon from '@mui/icons-material/Circle'; // For bullet points
+import {
+  Typography,
+  Paper,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
+import { ICONS } from "@/assets/icons";
 
 const InvalidBookingLink = () => {
   return (
@@ -31,15 +38,16 @@ const InvalidBookingLink = () => {
         ].map((item, index) => (
           <ListItem key={index} disableGutters>
             <ListItemIcon sx={{ minWidth: 24 }}>
-              <CircleIcon sx={{ fontSize: 8, mt: "5px" }} />
+              <ICONS.CircleIcon sx={{ fontSize: 8, mt: "5px" }} />
             </ListItemIcon>
-            <ListItemText primary={item} primaryTypographyProps={{ fontSize: 14 }} />
+            <ListItemText primary={item} />
           </ListItem>
         ))}
       </List>
 
       <Typography variant="body1" color="text.primary" fontWeight={500}>
-        📩 Please contact the person or agency who shared the link with you to get a valid booking link.
+        📩 Please contact the person or agency who shared the link with you to
+        get a valid booking link.
       </Typography>
     </Paper>
   );

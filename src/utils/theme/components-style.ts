@@ -12,7 +12,7 @@ export const componentsStyle = (theme: Theme) => {
         root: {
           textTransform: "none",
           fontSize: "1rem",
-          fontFamily: "ProductSans",
+          fontFamily: "sans-serif",
         },
         outlined: {},
         sizeSmall: {
@@ -55,7 +55,7 @@ export const componentsStyle = (theme: Theme) => {
     MuiInputBase: {
       styleOverrides: {
         root: {
-          backgroundColor: "#F2F5F7",
+          backgroundColor: "common.white",
         },
       },
     },
@@ -66,7 +66,7 @@ export const componentsStyle = (theme: Theme) => {
           fontWeight: 500,
           ".MuiOutlinedInput-notchedOutline": {
             transition: "all 0.3s ease",
-            borderColor: "transparent",
+            borderColor: "common.black",
           },
           "&.MuiInputBase-colorPrimary:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: theme.palette.primary.main,

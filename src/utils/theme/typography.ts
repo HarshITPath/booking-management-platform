@@ -10,12 +10,12 @@ import { Theme, TypographyVariantsOptions } from "@mui/material/styles";
 export const typography = (theme: Theme): TypographyVariantsOptions => {
   return {
     fontFamily: [
-      "Catamaran",
-      "Catamaran Fallback",
-      "League Spartan",
-      "League Spartan Fallback",
-      "ProductSans",
-      "ProductSans Fallback",
+      // "Catamaran",
+      // "Catamaran Fallback",
+      // "League Spartan",
+      // "League Spartan Fallback",
+      // "ProductSans",
+      // "ProductSans Fallback",
       "sans-serif",
     ].join(","),
 
@@ -24,7 +24,7 @@ export const typography = (theme: Theme): TypographyVariantsOptions => {
     },
 
     h1: {
-      fontFamily: "ProductSans",
+      fontFamily: "sans-serif",
       fontWeight: 400,
       [theme.breakpoints.up("xs")]: {
         fontSize: "1.75rem",
@@ -38,7 +38,7 @@ export const typography = (theme: Theme): TypographyVariantsOptions => {
     },
 
     h2: {
-      fontFamily: "ProductSans",
+      fontFamily: "sans-serif",
       fontWeight: 400,
       [theme.breakpoints.up("xs")]: {
         fontSize: "1.75rem",
@@ -66,7 +66,7 @@ export const typography = (theme: Theme): TypographyVariantsOptions => {
     h5: {},
     h6: {},
     body1: {
-      fontFamily: "Catamaran",
+      fontFamily: "sans-serif",
       fontWeight: 400,
       [theme.breakpoints.up("xs")]: {
         fontSize: "1.125rem",
@@ -79,7 +79,7 @@ export const typography = (theme: Theme): TypographyVariantsOptions => {
       },
     },
     body2: {
-      fontFamily: "Catamaran",
+      fontFamily: "sans-serif",
       fontWeight: 400,
       [theme.breakpoints.up("xs")]: {
         fontSize: "1rem",
@@ -92,7 +92,7 @@ export const typography = (theme: Theme): TypographyVariantsOptions => {
       },
     },
     subtitle1: {
-      fontFamily: "Catamaran",
+      fontFamily: "sans-serif",
       fontWeight: 400,
       [theme.breakpoints.up("xs")]: {
         fontSize: "0.875rem",
