@@ -11,3 +11,13 @@ export const ERROR_MESSAGES = {
   504: 'Server took too long. Try again.',
   common: 'Oops! Something went wrong. Try later.',
 };
+
+  export const DAYS_MAP = {
+    Sunday: 0,
+    Monday: 1,
+    Tuesday: 2,
+    Wednesday: 3,
+    Thursday: 4,
+    Friday: 5,
+    Saturday: 6,
+  } as const;

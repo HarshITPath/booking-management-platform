@@ -157,11 +157,7 @@ import moment from "moment";
 import InvalidBookingLink from "./invalid-booking";
 import Button from "@/components/button";
 import MeetingInfo from "./meeting-info";
-
-type HomeProps = {
-  agentCode?: string;
-  slot?: string;
-};
+import { useSearchParams } from "next/navigation";
 
 // Skeleton component for the left side (MeetingInfo)
 const MeetingInfoSkeleton = () => (
@@ -184,7 +180,7 @@ const CalendarSkeleton = () => (
       <Grid container spacing={1}>
         {Array.from({ length: 7 }).map((_, index) => (
           <Grid key={index} size={{ xs: 12 / 7 }}>
-            <Skeleton variant="circular" width={32} height={32} />
+            <Skeleton variant="rounded" width={44} height={44} />
           </Grid>
         ))}
       </Grid>
@@ -193,7 +189,7 @@ const CalendarSkeleton = () => (
         <Grid container spacing={1} key={weekIndex}>
           {Array.from({ length: 7 }).map((_, dayIndex) => (
             <Grid key={dayIndex} size={{ xs: 12 / 7 }}>
-              <Skeleton variant="circular" width={32} height={32} />
+              <Skeleton variant="rounded" width={44} height={44} />
             </Grid>
           ))}
         </Grid>
@@ -244,7 +240,13 @@ const BookingPageSkeleton = () => (
   </Grid>
 );
 
-export default function Home({ agentCode, slot }: HomeProps) {
+export default function Home() {
+
+  const searchParams = useSearchParams();
+
+  const agentCode = searchParams.get("agentCode") || undefined;
+  const slot = searchParams.get("slot") || undefined;
+
   const {
     bookingFormFields,
     methods,
@@ -273,7 +275,10 @@ export default function Home({ agentCode, slot }: HomeProps) {
     isInitialLoad,
   } = useBookingForm({ agentCode, slot });
 
-  console.log('bookingConfirmation', bookingConfirmation)
+  if (isBookingLinkInvalid) {
+    return <InvalidBookingLink />;
+  }
+  
 
   return (
     <Stack
@@ -286,12 +291,10 @@ export default function Home({ agentCode, slot }: HomeProps) {
     >
       <Stack sx={{ height: "100%" }}>
         <ContainerWrapper>
-          {isBookingLinkInvalid ? (
-            <InvalidBookingLink />
-          ) : bookingConfirmation ? (
+          {bookingConfirmation ? (
             <BookingConfirmation
               details={{
-                name:bookingConfirmation?.agent?.name,
+                name: bookingConfirmation?.agent?.name,
                 first_name: bookingConfirmation.userName.split(" ")[0],
                 last_name: bookingConfirmation.userName.split(" ")[1] || "",
                 email_id: bookingConfirmation.userEmail,
