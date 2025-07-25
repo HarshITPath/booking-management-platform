@@ -13,7 +13,8 @@ interface BookingConfirmationProps {
     organization?: string;
     date: string;
     time: string;
-    name:string
+    name:string,
+    duration:number
   };
 }
 
@@ -47,7 +48,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
               What
             </Typography>
             <Typography variant="body1" fontWeight="bold">
-              30 Min Meeting with {details?.name}
+              {details?.duration} Minutes Meeting with {details?.name}
             </Typography>
           </Stack>
           <Stack>

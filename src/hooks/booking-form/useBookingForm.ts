@@ -446,7 +446,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "@/api";
 import moment, { Moment } from "moment";
 import "moment-timezone";
-import { DAYS_MAP } from "@/utils/constants";
+import { DAYS_MAP, TIMEZONE_ALIASES } from "@/utils/constants";
 
 // API Response Interfaces
 interface BlackoutDate {
@@ -521,6 +521,7 @@ interface BookingConfirmationData {
     updatedAt: string;
     deletedAt: null;
   };
+  duration: number;
 }
 
 interface BookingResponse {
@@ -615,7 +616,7 @@ const useBookingForm = ({
 
   // Memoized computed values
   const blackoutDates = useMemo(() => {
-    return slotsApiData.blackoutDates.map((item) => item.date);
+    return slotsApiData?.blackoutDates?.map((item) => item.date);
   }, [slotsApiData.blackoutDates]);
 
   const disabledDays = useMemo(() => {
@@ -625,20 +626,22 @@ const useBookingForm = ({
   }, [slotsApiData.availability, DAYS_MAP]);
 
   const eventDetails = useMemo(() => {
-    return slotsApiData.events[0] || null;
+    return slotsApiData?.events[0] || null;
   }, [slotsApiData.events]);
 
   const timezonData = useMemo(() => {
     if (!rawTimezoneData.length) return [];
 
     const formatStr = timeFormat === "12h" ? "h:mm A" : "HH:mm";
-    return rawTimezoneData.map((tz: string) => {
-      const currentTime = moment().tz(tz).format(formatStr);
-      return {
-        id: tz,
-        label: `${tz} - ${currentTime}`,
-      };
-    });
+    return rawTimezoneData
+      .filter((tz) => moment.tz.zone(tz)) // ✅ Filter out invalid/unsupported zones
+      .map((tz: string) => {
+        const currentTime = moment().tz(tz).format(formatStr);
+        return {
+          id: tz,
+          label: `${tz} - ${currentTime}`,
+        };
+      });
   }, [rawTimezoneData, timeFormat]);
 
   const availableSlots = useMemo(() => {
@@ -749,6 +752,8 @@ const useBookingForm = ({
           // Reset lastFetchedDateRef on error so it can be retried
           lastFetchedDateRef.current = null;
           return Promise.reject(error);
+        } finally {
+          setIsInitialLoad(false);
         }
       },
       [agentCode, resetSlotsData]
@@ -847,7 +852,11 @@ const useBookingForm = ({
     (tz: TimezoneData | null) => {
       if (tz === null && rawTimezoneData.length > 0) {
         // Reset to user's timezone
-        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const normalizedTimeZone =
+          Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const userTimeZone =
+          TIMEZONE_ALIASES[normalizedTimeZone] || normalizedTimeZone;
+
         const found = rawTimezoneData.find(
           (timezone) => timezone === userTimeZone
         );
@@ -885,7 +894,10 @@ const useBookingForm = ({
       initializationRef.current = true;
 
       // Set timezone
-      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const normalizedTimeZone =
+        Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const userTimeZone =
+        TIMEZONE_ALIASES[normalizedTimeZone] || normalizedTimeZone;
       const found = rawTimezoneData.find((tz) => tz === userTimeZone);
       const targetTz = found || rawTimezoneData[0];
 
@@ -930,13 +942,6 @@ const useBookingForm = ({
       }
     }
   }, [timeFormat, selectedTimezone]);
-
-  // Hide skeleton after initial load
-  useEffect(() => {
-    if (!timZonesLoading && rawTimezoneData.length > 0 && isInitialLoad) {
-      setIsInitialLoad(false);
-    }
-  }, [timZonesLoading, rawTimezoneData, isInitialLoad]);
 
   // Fetch slots when date changes (but only after initialization is complete)
   useEffect(() => {

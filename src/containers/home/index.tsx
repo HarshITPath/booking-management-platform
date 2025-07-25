@@ -273,7 +273,11 @@ export default function Home() {
     eventDetails,
     timZonesLoading,
     isInitialLoad,
-  } = useBookingForm({ agentCode, slot });
+  } = useBookingForm({ agentCode, slot })
+
+    if (isInitialLoad) {
+    return <BookingPageSkeleton />;
+  }
 
   if (isBookingLinkInvalid) {
     return <InvalidBookingLink />;
@@ -308,10 +312,9 @@ export default function Home() {
                   .format("h:mm A")} - ${moment(bookingConfirmation.endTime)
                   .tz(bookingConfirmation.userTimezone)
                   .format("h:mm A")}`,
+                duration:bookingConfirmation.duration
               }}
             />
-          ) : isInitialLoad ? (
-            <BookingPageSkeleton />
           ) : (
             <Grid container spacing={{ xs: 3, md: 4 }}>
               <Grid size={{ xs: 12, lg: 3 }}>
