@@ -6,20 +6,20 @@ import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { Moment } from "moment";
 
 interface DateCalendarViewsProps {
-  onDateSelect: (date: Moment | null) => void;
+  handleDateSelect: (date: Moment | null) => void;
   selectedDate: Moment | null;
   blackoutDates?: string[];
   disabledDays?: number[];
 }
 
 export default function DateCalendarViews({
-  onDateSelect,
+  handleDateSelect,
   selectedDate,
   blackoutDates = [],
   disabledDays = [],
 }: DateCalendarViewsProps) {
   const handleDateChange = (newDate: Moment | null) => {
-    onDateSelect(newDate);
+    handleDateSelect(newDate);
   };
 
   const shouldDisableDate = (date: Moment) => {

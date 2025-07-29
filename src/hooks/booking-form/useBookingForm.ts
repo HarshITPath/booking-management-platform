@@ -629,7 +629,7 @@ const useBookingForm = ({
     return slotsApiData?.events[0] || null;
   }, [slotsApiData.events]);
 
-  const timezonData = useMemo(() => {
+  const timezoneData = useMemo(() => {
     if (!rawTimezoneData.length) return [];
 
     const formatStr = timeFormat === "12h" ? "h:mm A" : "HH:mm";
@@ -981,7 +981,7 @@ const useBookingForm = ({
     // Timezone handling
     selectedTimezone,
     setSelectedTimezone: handleTimezoneChange,
-    timezonData,
+    timezoneData,
     timeFormat,
     handleTimeFormatToggle,
 
